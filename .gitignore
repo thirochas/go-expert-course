@@ -1,0 +1,6 @@
+.idea
+vendor
+*.txt
+*.db
+*.bin
+.DS_Store
