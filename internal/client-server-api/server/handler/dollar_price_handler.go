@@ -35,7 +35,11 @@ func (d *DollarPriceHandler) Handle(w http.ResponseWriter, r *http.Request) {
 	default:
 	}
 
-	d.dollarPriceRepository.Save(dollarPrice)
+	err = d.dollarPriceRepository.Save(dollarPrice)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
