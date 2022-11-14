@@ -9,14 +9,11 @@ import (
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 	"net/http"
-	"os"
 )
 
 const dbFileName = "dollar_price.db"
 
 func main() {
-	os.RemoveAll(dbFileName)
-
 	db, err := gorm.Open(sqlite.Open(dbFileName), &gorm.Config{})
 	if err != nil {
 		panic(fmt.Errorf("error opening database: %v", err))
