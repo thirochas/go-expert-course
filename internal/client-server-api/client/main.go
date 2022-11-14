@@ -17,29 +17,9 @@ type DollarPrice struct {
 const cotacaoUrl = "http://localhost:8080/cotacao"
 
 func main() {
-	ctx, cancel := context.WithTimeout(context.Background(), 300*time.Millisecond)
-	defer cancel()
-
-	request, err := http.NewRequestWithContext(ctx, "GET", cotacaoUrl, nil)
+	dollarPrice, err := getDollarPrice()
 	if err != nil {
-		panic(fmt.Errorf("error creating request: %v", err))
-	}
-
-	resp, err := http.DefaultClient.Do(request)
-	if err != nil {
-		panic(fmt.Errorf("error getting dolar price: %v", err))
-	}
-	defer resp.Body.Close()
-
-	body, err := io.ReadAll(resp.Body)
-	if err != nil {
-		panic(fmt.Errorf("error reading response: %v", err))
-	}
-
-	var dollarPrice DollarPrice
-	err = json.Unmarshal(body, &dollarPrice)
-	if err != nil {
-		panic(fmt.Errorf("error unmarshalling response: %v", err))
+		panic(err)
 	}
 
 	f, err := os.Create("cotacao.txt")
@@ -50,4 +30,32 @@ func main() {
 
 	length, err := f.Write([]byte(fmt.Sprintf("Dólar: %v", dollarPrice.Bid)))
 	fmt.Printf("File cotacao.txt created successfully! Lenght: %d bytes\n", length)
+}
+
+func getDollarPrice() (DollarPrice, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 300*time.Millisecond)
+	defer cancel()
+
+	request, err := http.NewRequestWithContext(ctx, "GET", cotacaoUrl, nil)
+	if err != nil {
+		return DollarPrice{}, fmt.Errorf("error creating request: %v", err)
+	}
+
+	resp, err := http.DefaultClient.Do(request)
+	if err != nil {
+		return DollarPrice{}, fmt.Errorf("error getting dolar price: %v", err)
+	}
+	defer resp.Body.Close()
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return DollarPrice{}, fmt.Errorf("error reading response: %v", err)
+	}
+
+	var dollarPrice DollarPrice
+	err = json.Unmarshal(body, &dollarPrice)
+	if err != nil {
+		return DollarPrice{}, fmt.Errorf("error unmarshalling response: %v", err)
+	}
+	return dollarPrice, nil
 }
