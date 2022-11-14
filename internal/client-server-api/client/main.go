@@ -46,6 +46,8 @@ func main() {
 	if err != nil {
 		panic(fmt.Errorf("error creating file: %v", err))
 	}
+	defer f.Close()
+
 	length, err := f.Write([]byte(fmt.Sprintf("Dólar: %v", dollarPrice.Bid)))
 	fmt.Printf("File cotacao.txt created successfully! Lenght: %d bytes\n", length)
 }
