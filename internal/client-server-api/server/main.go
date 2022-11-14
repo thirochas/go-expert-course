@@ -12,10 +12,12 @@ import (
 	"os"
 )
 
-func main() {
-	os.RemoveAll("dollar_price.db")
+const dbFileName = "dollar_price.db"
 
-	db, err := gorm.Open(sqlite.Open("dollar_price.db"), &gorm.Config{})
+func main() {
+	os.RemoveAll(dbFileName)
+
+	db, err := gorm.Open(sqlite.Open(dbFileName), &gorm.Config{})
 	if err != nil {
 		panic(fmt.Errorf("error opening database: %v", err))
 	}
